@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Show de la vida — Seba Lopez</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Mono:ital,wght@0,300;0,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #161210; --fg: #e8ddd0; --fg-dim: rgba(232,221,208,0.6);
+    --amber: #c87941; --rule: rgba(200,121,65,0.12);
+    --mono: 'DM Mono', monospace; --serif: 'Cormorant Garamond', serif;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--serif); min-height: 100vh; }
+
+  #progress-bar {
+    position: fixed; top: 0; left: 0; height: 2px;
+    background: var(--amber); width: 0%; z-index: 200;
+    transition: width 0.1s linear;
+  }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 24px 64px;
+    border-bottom: 1px solid var(--rule);
+    background: rgba(22,18,16,0.9);
+    backdrop-filter: blur(24px);
+  }
+  .back-link {
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em;
+    color: rgba(200,121,65,0.55); text-decoration: none;
+    display: flex; align-items: center; gap: 10px; transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--amber); }
+  .nav-name { font-size: 15px; letter-spacing: 0.02em; color: var(--fg-dim); }
+  .nav-lang { font-family: var(--mono); font-size: 9px; letter-spacing: 0.15em; color: rgba(200,121,65,0.4); }
+
+  /* Full-bleed dark header with moon motif */
+  .article-header {
+    padding: 160px 64px 80px;
+    max-width: 900px; margin: 0 auto;
+    border-bottom: 1px solid var(--rule);
+    position: relative;
+  }
+
+  /* Subtle moon arc in header */
+  .moon-arc {
+    position: absolute; right: 0; top: 80px;
+    width: 320px; height: 320px; pointer-events: none;
+  }
+
+  .article-meta {
+    display: flex; align-items: center; gap: 16px; margin-bottom: 40px;
+  }
+  .article-meta .rule { width: 32px; height: 1px; background: rgba(200,121,65,0.4); }
+  .article-meta span {
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em;
+    color: rgba(200,121,65,0.5);
+  }
+  .article-title {
+    font-size: 64px; font-weight: 300; line-height: 1.12;
+    letter-spacing: -0.02em; color: #ede4d8; font-style: italic;
+  }
+  .article-subtitle {
+    margin-top: 16px; font-size: 20px; font-weight: 300;
+    color: rgba(232,221,208,0.4); font-style: italic;
+  }
+  .header-geo {
+    display: flex; align-items: center; margin-top: 48px;
+  }
+  .header-geo .line { flex: 1; height: 1px; background: var(--rule); }
+  .header-geo .diamond {
+    width: 5px; height: 5px; border: 1px solid rgba(200,121,65,0.3);
+    transform: rotate(45deg); margin: 0 14px;
+  }
+
+  .article-body {
+    max-width: 680px; margin: 0 auto;
+    padding: 72px 64px 80px;
+  }
+  .article-body p {
+    font-size: 22px; line-height: 1.95;
+    color: rgba(232,221,208,0.8); font-weight: 300;
+    text-wrap: pretty; margin-bottom: 32px;
+  }
+  .article-body p:first-of-type::first-letter {
+    font-size: 88px; line-height: 0.75;
+    float: left; margin: 8px 16px 0 0;
+    color: var(--amber); font-weight: 300; font-style: italic;
+  }
+
+  .section-break {
+    display: flex; align-items: center; gap: 16px; margin: 48px 0;
+  }
+  .section-break .line { flex: 1; height: 1px; background: var(--rule); }
+  .section-break .mark {
+    font-family: var(--mono); font-size: 9px;
+    color: rgba(200,121,65,0.3); letter-spacing: 0.1em;
+  }
+
+  /* Closing line — the one used as hero quote */
+  .closing-line {
+    margin: 56px 0 0;
+    padding: 44px 48px;
+    background: rgba(200,121,65,0.04);
+    border: 1px solid rgba(200,121,65,0.14);
+    border-radius: 2px;
+    position: relative;
+  }
+  .closing-line::before {
+    content: '"';
+    position: absolute; top: 20px; left: 28px;
+    font-size: 48px; color: var(--amber); opacity: 0.4;
+    line-height: 1; font-family: var(--serif); font-weight: 300;
+  }
+  .closing-line p {
+    font-size: 26px !important; font-style: italic;
+    color: #ede4d8 !important; line-height: 1.5 !important;
+    margin-bottom: 0 !important;
+    padding-left: 16px;
+  }
+
+  .article-image {
+    margin: 48px 0;
+    aspect-ratio: 16/9;
+    background: repeating-linear-gradient(
+      45deg, rgba(200,121,65,0.04), rgba(200,121,65,0.04) 1px,
+      transparent 1px, transparent 12px
+    );
+    border: 1px solid rgba(200,121,65,0.1);
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 2px;
+  }
+  .article-image span {
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.15em;
+    color: rgba(200,121,65,0.25);
+  }
+
+  .article-nav {
+    max-width: 900px; margin: 0 auto;
+    padding: 48px 64px 80px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid var(--rule);
+  }
+  .nav-piece {
+    display: flex; flex-direction: column; gap: 8px;
+    text-decoration: none; max-width: 320px;
+  }
+  .nav-piece .label {
+    font-family: var(--mono); font-size: 8px; letter-spacing: 0.2em;
+    color: rgba(200,121,65,0.4);
+  }
+  .nav-piece .title {
+    font-size: 18px; font-style: italic; color: rgba(232,221,208,0.7);
+    transition: color 0.2s;
+  }
+  .nav-piece:hover .title { color: #ede4d8; }
+  .nav-piece.right { text-align: right; }
+  .nav-divider { width: 1px; height: 40px; background: var(--rule); }
+
+
+  /* ── MOBILE ──────────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    nav { padding: 20px 24px; }
+    .article-header { padding: 100px 24px 48px; }
+    .article-title { font-size: 38px !important; line-height: 1.2; }
+    .article-subtitle { font-size: 15px; }
+    .article-body { padding: 48px 24px 60px; }
+    .article-body p { font-size: 19px; line-height: 1.85; }
+    .article-body p:first-of-type::first-letter { font-size: 64px; margin: 6px 12px 0 0; }
+    .verse-block { padding: 28px 0 28px 20px; }
+    .verse-line { font-size: 19px !important; }
+    .closing-line { padding: 28px 24px; }
+    .closing-line p { font-size: 21px !important; }
+    .pull-quote .pq-text { font-size: 22px; }
+    .poem { padding: 56px 24px 80px; }
+    .poem-line { font-size: 20px !important; padding: 7px 0; }
+    .poem-line.opening { font-size: 23px !important; }
+    .poem-line.emphatic { font-size: 21px !important; }
+    .poem-line.closing-bright { font-size: 23px !important; }
+    .article-nav { padding: 36px 24px 56px; flex-direction: column; gap: 28px; align-items: flex-start; }
+    .nav-piece.right { text-align: left; }
+    .nav-divider { display: none; }
+    .lyric { font-size: 17px; padding-left: 16px; }
+    .questions-block p { font-size: 18px; }
+    .epigraph-strip { padding: 100px 24px 0; }
+  }
+
+  @media (max-width: 480px) {
+    .article-title { font-size: 32px !important; }
+    .article-body p { font-size: 17px; }
+    .poem-line { font-size: 17px !important; }
+    .poem-line.opening { font-size: 20px !important; }
+  }
+</style>
+</head>
+<body>
+<div id="progress-bar"></div>
+
+<nav>
+  <a href="../index.html" class="back-link">← WRITING</a>
+  <span class="nav-name">Seba Lopez</span>
+  <span class="nav-lang">ES</span>
+</nav>
+
+<header class="article-header">
+  <!-- Moon arc -->
+  <svg class="moon-arc" viewBox="0 0 320 320" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <circle cx="160" cy="160" r="140" stroke="rgba(200,121,65,0.06)" stroke-width="1"/>
+    <circle cx="160" cy="160" r="100" stroke="rgba(200,121,65,0.05)" stroke-width="1"/>
+    <circle cx="160" cy="160" r="60" stroke="rgba(200,121,65,0.07)" stroke-width="1"/>
+    <circle cx="160" cy="160" r="4" fill="rgba(200,121,65,0.3)"/>
+    <!-- Moon crescent suggestion -->
+    <path d="M 160 20 A 140 140 0 0 1 280 160" stroke="rgba(200,121,65,0.18)" stroke-width="1.5" fill="none"/>
+  </svg>
+
+  <div class="article-meta">
+    <div class="rule"></div>
+    <span>03 &nbsp;·&nbsp; ESPAÑOL &nbsp;·&nbsp; 2024</span>
+  </div>
+  <h1 class="article-title">El Show de la vida</h1>
+  <p class="article-subtitle">El espectáculo de la vida</p>
+  <div class="header-geo">
+    <div class="line"></div>
+    <div class="diamond"></div>
+    <div class="line"></div>
+  </div>
+</header>
+
+<article class="article-body">
+
+  <p>Bajo la luz plateada de la luna llena, celebré una década como ingeniero, justo después del Domingo de Resurrección, un día de renovación y renacimiento. En esa noche mágica, presencié un desfile interminable de entidades que transitaban frente a mí, cada una mostrando las emociones más profundas del ser humano.</p>
+
+  <p>En esa visión onírica, di a luz a una criatura, contemplé el sol reflejado en la luna, presencié el regocijo de mujeres en un festín y el dolor y el grito de otras durante el parto. Escuché a dos ángeles cantar una serenata a la luz de una vela, la melodía más hermosa que jamás había oído.</p>
+
+  <p>Un sentimiento de miedo me invadió, y temí no regresar de ese lugar de oscuridad. Vi mi propia muerte y resurrección. Observé a un ninja moverse sigilosamente en las sombras.</p>
+
+  <div class="section-break">
+    <div class="line"></div>
+    <div class="mark">◇</div>
+    <div class="line"></div>
+  </div>
+
+  <p>Ese desfile de emociones era un escenario sin precedentes, un torrente de sentimientos nuevos que jamás había experimentado. Un espectáculo guiado por los ícaros de un padre y una madre Shipibo, quienes cedieron su lugar para que su hijo brillara. Y brilló con un poder hipnotizante. Su canto era una flecha que atravesaba directamente el corazón, una operación a corazón abierto en el alma.</p>
+
+  <p>Cuando me faltó el aire y el miedo me invadió, salí a buscar la luz de la luna y respirar. Mi esposo y mi madre me acompañaban en ese trance. Enfrentando el miedo, regresé al círculo y presencié el escenario más bello de la vida: generaciones de seres transmitiendo el conocimiento de padres a hijos, de hermanos a hermanos. Custodiando el preciado regalo de la vida bajo el secreto de las montañas. Pasando la antorcha mientras dejamos morir lo que ya no es.</p>
+
+  <div class="closing-line">
+    <p>Un buda de espaldas al sol me señaló el norte, anclándome por siempre a la conciencia del ahora.</p>
+  </div>
+
+  <div class="article-image" style="margin-top:56px;"><span>imagen · luna llena</span></div>
+
+</article>
+
+<nav class="article-nav">
+  <a href="Apagar el ruido.html" class="nav-piece left">
+    <span class="label">← ANTERIOR</span>
+    <span class="title">Apagar el ruido para escuchar mi respiración</span>
+  </a>
+  <div class="nav-divider"></div>
+  <a href="35 Piruetas.html" class="nav-piece right">
+    <span class="label">SIGUIENTE →</span>
+    <span class="title">35 Piruetas</span>
+  </a>
+</nav>
+
+<script>
+  window.addEventListener('scroll', () => {
+    const doc = document.documentElement;
+    const pct = doc.scrollTop / (doc.scrollHeight - doc.clientHeight) * 100;
+    document.getElementById('progress-bar').style.width = pct + '%';
+  }, { passive: true });
+</script>
+</body>
+</html>

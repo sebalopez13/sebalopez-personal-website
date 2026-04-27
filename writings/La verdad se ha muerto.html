@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La verdad se ha muerto — Goya · Seba Lopez</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=DM+Mono:ital,wght@0,300;0,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #161210; --fg: #e8ddd0; --fg-dim: rgba(232,221,208,0.6);
+    --amber: #c87941; --rule: rgba(200,121,65,0.12);
+    --mono: 'DM Mono', monospace; --serif: 'Cormorant Garamond', serif;
+  }
+  html { scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--serif); min-height: 100vh; }
+
+  #progress-bar {
+    position: fixed; top: 0; left: 0; height: 2px;
+    background: var(--amber); width: 0%; z-index: 200;
+    transition: width 0.1s linear;
+  }
+
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 24px 64px;
+    border-bottom: 1px solid var(--rule);
+    background: rgba(22,18,16,0.9);
+    backdrop-filter: blur(24px);
+  }
+  .back-link {
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em;
+    color: rgba(200,121,65,0.55); text-decoration: none;
+    display: flex; align-items: center; gap: 10px;
+    transition: color 0.2s;
+  }
+  .back-link:hover { color: var(--amber); }
+  .nav-name { font-size: 15px; letter-spacing: 0.02em; color: var(--fg-dim); }
+  .nav-lang { font-family: var(--mono); font-size: 9px; letter-spacing: 0.15em; color: rgba(200,121,65,0.4); }
+
+  /* Epigraph strip */
+  .epigraph-strip {
+    padding: 160px 64px 0;
+    max-width: 900px; margin: 0 auto;
+  }
+  .epigraph-lines {
+    display: flex; flex-direction: column; gap: 6px; margin-bottom: 56px;
+  }
+  .epigraph-line {
+    font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em;
+    color: rgba(200,121,65,0.45);
+  }
+  .epigraph-line.large {
+    font-size: 14px; color: rgba(200,121,65,0.65); letter-spacing: 0.12em;
+    margin-top: 4px;
+  }
+
+  .article-header {
+    max-width: 900px; margin: 0 auto;
+    padding: 0 64px 72px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .article-meta {
+    display: flex; align-items: center; gap: 16px; margin-bottom: 40px;
+  }
+  .article-meta .rule { width: 32px; height: 1px; background: rgba(200,121,65,0.4); }
+  .article-meta span {
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.2em;
+    color: rgba(200,121,65,0.5);
+  }
+  .article-title {
+    font-size: 64px; font-weight: 300; line-height: 1.12;
+    letter-spacing: -0.02em; color: #ede4d8; font-style: italic;
+  }
+  .article-subtitle {
+    font-size: 22px; font-weight: 300; color: rgba(232,221,208,0.45);
+    margin-top: 12px; font-style: italic; letter-spacing: 0.02em;
+  }
+
+  .header-geo {
+    display: flex; align-items: center; gap: 0; margin-top: 48px;
+  }
+  .header-geo .line { flex: 1; height: 1px; background: var(--rule); }
+  .header-geo .diamond {
+    width: 5px; height: 5px; border: 1px solid rgba(200,121,65,0.3);
+    transform: rotate(45deg); margin: 0 14px; flex-shrink: 0;
+  }
+
+  .article-body {
+    max-width: 680px; margin: 0 auto;
+    padding: 72px 64px 80px;
+  }
+  .article-body p {
+    font-size: 22px; line-height: 1.9;
+    color: rgba(232,221,208,0.8); font-weight: 300;
+    text-wrap: pretty; margin-bottom: 32px;
+  }
+  .article-body p:first-of-type::first-letter {
+    font-size: 88px; line-height: 0.75;
+    float: left; margin: 8px 16px 0 0;
+    color: var(--amber); font-weight: 300; font-style: italic;
+  }
+
+  /* Pull quote block */
+  .pull-quote {
+    margin: 48px 0;
+    padding: 32px 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .pull-quote .pq-text {
+    font-size: 28px; font-style: italic; font-weight: 300;
+    color: #ede4d8; line-height: 1.45; margin-bottom: 0 !important;
+  }
+  .pull-quote .pq-attr {
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.18em;
+    color: rgba(200,121,65,0.45); margin-bottom: 0 !important;
+    font-size: 9px !important; line-height: 1 !important;
+  }
+
+  .article-image {
+    margin: 48px 0;
+    aspect-ratio: 16/9;
+    background: repeating-linear-gradient(
+      45deg, rgba(200,121,65,0.04), rgba(200,121,65,0.04) 1px,
+      transparent 1px, transparent 12px
+    );
+    border: 1px solid rgba(200,121,65,0.1);
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 2px;
+  }
+  .article-image span {
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.15em;
+    color: rgba(200,121,65,0.25);
+  }
+
+  /* Section break */
+  .section-break {
+    display: flex; align-items: center; gap: 16px;
+    margin: 56px 0;
+  }
+  .section-break .line { flex: 1; height: 1px; background: var(--rule); }
+  .section-break .mark {
+    font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em;
+    color: rgba(200,121,65,0.3); flex-shrink: 0;
+  }
+
+  .article-nav {
+    max-width: 900px; margin: 0 auto;
+    padding: 48px 64px 80px;
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid var(--rule);
+  }
+  .nav-piece {
+    display: flex; flex-direction: column; gap: 8px;
+    text-decoration: none; max-width: 320px;
+  }
+  .nav-piece .label {
+    font-family: var(--mono); font-size: 8px; letter-spacing: 0.2em;
+    color: rgba(200,121,65,0.4);
+  }
+  .nav-piece .title {
+    font-size: 18px; font-style: italic; color: rgba(232,221,208,0.7);
+    transition: color 0.2s;
+  }
+  .nav-piece:hover .title { color: #ede4d8; }
+  .nav-piece.right { text-align: right; }
+  .nav-divider { width: 1px; height: 40px; background: var(--rule); flex-shrink: 0; }
+
+
+  /* ── MOBILE ──────────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    nav { padding: 20px 24px; }
+    .article-header { padding: 100px 24px 48px; }
+    .article-title { font-size: 38px !important; line-height: 1.2; }
+    .article-subtitle { font-size: 15px; }
+    .article-body { padding: 48px 24px 60px; }
+    .article-body p { font-size: 19px; line-height: 1.85; }
+    .article-body p:first-of-type::first-letter { font-size: 64px; margin: 6px 12px 0 0; }
+    .verse-block { padding: 28px 0 28px 20px; }
+    .verse-line { font-size: 19px !important; }
+    .closing-line { padding: 28px 24px; }
+    .closing-line p { font-size: 21px !important; }
+    .pull-quote .pq-text { font-size: 22px; }
+    .poem { padding: 56px 24px 80px; }
+    .poem-line { font-size: 20px !important; padding: 7px 0; }
+    .poem-line.opening { font-size: 23px !important; }
+    .poem-line.emphatic { font-size: 21px !important; }
+    .poem-line.closing-bright { font-size: 23px !important; }
+    .article-nav { padding: 36px 24px 56px; flex-direction: column; gap: 28px; align-items: flex-start; }
+    .nav-piece.right { text-align: left; }
+    .nav-divider { display: none; }
+    .lyric { font-size: 17px; padding-left: 16px; }
+    .questions-block p { font-size: 18px; }
+    .epigraph-strip { padding: 100px 24px 0; }
+  }
+
+  @media (max-width: 480px) {
+    .article-title { font-size: 32px !important; }
+    .article-body p { font-size: 17px; }
+    .poem-line { font-size: 17px !important; }
+    .poem-line.opening { font-size: 20px !important; }
+  }
+</style>
+</head>
+<body>
+<div id="progress-bar"></div>
+
+<nav>
+  <a href="../index.html" class="back-link">← WRITING</a>
+  <span class="nav-name">Seba Lopez</span>
+  <span class="nav-lang">ES</span>
+</nav>
+
+<!-- Epigraph -->
+<div class="epigraph-strip">
+  <div class="epigraph-lines">
+    <div class="epigraph-line">El sueño de la razón produce monstruos</div>
+    <div class="epigraph-line large">La verdad se ha muerto</div>
+    <div class="epigraph-line">Yo la he visto</div>
+  </div>
+</div>
+
+<header class="article-header">
+  <div class="article-meta">
+    <div class="rule"></div>
+    <span>11 &nbsp;·&nbsp; ESPAÑOL &nbsp;·&nbsp; 2025</span>
+  </div>
+  <h1 class="article-title">La verdad se ha muerto</h1>
+  <p class="article-subtitle">— Goya</p>
+  <div class="header-geo">
+    <div class="line"></div>
+    <div class="diamond"></div>
+    <div class="line"></div>
+  </div>
+</header>
+
+<article class="article-body">
+
+  <div class="pull-quote">
+    <p class="pq-text">Puertas al cielo, portales al caos</p>
+  </div>
+
+  <p>Amanecí en el departamento de Fred, un arquitecto con alma de escultor. Su hogar parece haber sido tallado más que construido. Escaleras de mármol que invitan al silencio, terrazas que se abren como flores al sol de Barcelona. Me senté con el café en mano, y entre teclas y suspiros terminé la presentación para los padres de la escuela. Incluí todo: palabras, imágenes, y hasta un video hecho con Veo3, acompañado de una canción creada con Suno. Una sinfonía digital para un sueño colectivo.</p>
+
+  <p>Al cerrar la compu, comí 1.2 gramos de psilocibina en forma de chocolate. Una dosis alta. Un umbral que elegí cruzar con intención.</p>
+
+  <p>Salí caminando desde la plaza Catalunya hacia la Sagrada Familia. Barcelona se desplegaba ante mis ojos como un poema visual. Las fachadas ondulaban, los colores de las hojas parecían dialogar con las formas de Gaudí. ¿O era Gaudí quien había aprendido a imitar el lenguaje secreto de los árboles? Andrea Bocelli y Céline Dion cantaban en mis oídos. El café me daba alegría. Los hongos me daban profundidad. Y yo era un cuerpo caminando en un cuadro vivo.</p>
+
+  <div class="section-break">
+    <div class="line"></div>
+    <div class="mark">◇</div>
+    <div class="line"></div>
+  </div>
+
+  <p>Pero al acercarme a la Sagrada Familia, algo cambió. Lo que de lejos parecía celestial, se empezó a sentir como una entrada al infierno. El contraste me golpeó: personas sin brazos pidiendo limosna, basura desbordando de los tachos, palomas comiendo restos en el suelo, homeless durmiendo en bancos duros. Un hombre delante mío deja caer todas sus monedas mientras intenta comprar su entrada. Nadie lo ayuda. Yo lo miro. Me veo.</p>
+
+  <p>Le doy mi ticket a la mujer de la entrada. Me responde con enojo, dice que no funciona. Que no es su problema. Que llame a quien me lo vendió. Me invade una tristeza vieja, como si algo en mí supiera que no estoy listo para entrar al cielo. O que ese cielo, al menos, no son los espejitos de colores que me vendieron.</p>
+
+  <p>Me alejo. Camino alrededor. Miro la Sagrada Familia desde lejos. Es majestuosa, indescifrable. Siento admiración, sí, pero también un rechazo profundo. Hay algo en ese contraste que me descoloca: ¿por qué lo más divino parece atraer lo más roto? ¿Por qué lo más bello se rodea de lo más caótico?</p>
+
+  <div class="section-break">
+    <div class="line"></div>
+    <div class="mark">◇</div>
+    <div class="line"></div>
+  </div>
+
+  <p>Sigo caminando. Barcelona vuelve a acariciarme. Cada vitral, cada balcón, cada columna me recuerda que la belleza también habita en los detalles pequeños. Llego a Casa Batlló. Y ahí, otra vez, me enamoro de Gaudí.</p>
+
+  <p>Al lado, entro a un palacio sin saber muy bien qué espero encontrar. Me recibe una exposición de Goya, desarrollada con tecnología inmersiva por una empresa llamada Layers. Me siento en una sala de proyecciones 3D que está completamente vacía. El espectáculo es solo para mí. Cuarenta minutos de deleite visual, sonido envolvente y frases que se me graban como tatuajes.</p>
+
+  <div class="pull-quote">
+    <p class="pq-text">"El sueño de la razón produce monstruos."</p>
+    <p class="pq-text">"La verdad se ha muerto."</p>
+    <p class="pq-text">"Yo la he visto."</p>
+    <p class="pq-attr">— GOYA</p>
+  </div>
+
+  <p>Salgo cargado de ideas. Camino otra vez por este paisaje onírico que es Barcelona. Me encuentro con mi marido en un rooftop. El sol empieza a caer. Y en ese instante, siento que estoy exactamente donde tengo que estar: en esta vida, en este cuerpo, en esta ciudad que vibra con belleza, preguntas y misterio.</p>
+
+  <div class="article-image"><span>Barcelona · rooftop · atardecer</span></div>
+
+</article>
+
+<nav class="article-nav">
+  <a href="Amaneceres.html" class="nav-piece left"><span class="label">← ANTERIOR</span><span class="title">Amaneceres</span></a>
+  <div class="nav-divider"></div>
+  <a href="Ayn Rand.html" class="nav-piece right"><span class="label">SIGUIENTE →</span><span class="title">Ayn Rand</span></a>
+</nav>
+
+<script>
+  window.addEventListener('scroll', () => {
+    const doc = document.documentElement;
+    const pct = doc.scrollTop / (doc.scrollHeight - doc.clientHeight) * 100;
+    document.getElementById('progress-bar').style.width = pct + '%';
+  }, { passive: true });
+</script>
+</body>
+</html>
